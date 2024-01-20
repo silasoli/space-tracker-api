@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { CreateUserDto } from '../dto/create-user.dto';
 import { UpdateUserDto } from '../dto/update-user.dto';
 import { InjectModel } from '@nestjs/mongoose';
@@ -7,6 +7,7 @@ import { Model } from 'mongoose';
 import Role from '../../roles/enums/role.enum';
 import { UserResponseDto } from '../dto/user-response.dto';
 import * as bcrypt from 'bcrypt';
+import { ERRORS } from 'src/common/utils/constants/errors';
 
 @Injectable()
 export class UsersService {
@@ -22,7 +23,7 @@ export class UsersService {
   private async findUserByID(_id: string): Promise<User> {
     const user = await this.userModel.findById(_id);
 
-    if (!user) throw new NotFoundException('Usuário não encontrado.');
+    if (!user) throw ERRORS.USERS.NOT_FOUND;
 
     return user;
   }
@@ -76,8 +77,12 @@ export class UsersService {
   public async findRolesOfUser(_id: string): Promise<Role[]> {
     const user = await this.userModel.findOne({ _id }, ['roles']);
 
-    if (!user) throw new NotFoundException('Usuário não encontrado.');
+    if (!user) throw ERRORS.USERS.NOT_FOUND;
 
     return user.roles;
+  }
+
+  public async comparePass(password: string, hash: string): Promise<boolean> {
+    return bcrypt.compare(password, hash);
   }
 }

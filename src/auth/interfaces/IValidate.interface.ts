@@ -1,6 +1,6 @@
 import mongoose from 'mongoose';
 
-export interface Ivalidate {
+export interface IValidate {
   sub: string;
 
   iat: number;
@@ -8,6 +8,6 @@ export interface Ivalidate {
   exp: number;
 }
 
-export interface IvalidateReturn {
+export interface IValidateReturn {
   _id: mongoose.ObjectId | string;
 }

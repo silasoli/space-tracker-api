@@ -1,26 +1,59 @@
 import { Injectable } from '@nestjs/common';
-import { CreateAuthDto } from '../dto/create-auth.dto';
-import { UpdateAuthDto } from '../dto/update-auth.dto';
+import { JwtService } from '@nestjs/jwt';
+import { UsersService } from '../../users/services/users.service';
+import { UserLoginDto } from '../dto/user-login.dto';
+import { UserLoginResponseDto } from '../dto/user-login-response.dto';
+import { ERRORS } from 'src/common/utils/constants/errors';
+import { ILogin } from '../interfaces/ILogin.interface';
 
 @Injectable()
 export class AuthService {
-  create(createAuthDto: CreateAuthDto) {
-    return 'This action adds a new auth';
+  constructor(
+    private usersService: UsersService,
+    private jwtService: JwtService,
+  ) {}
+
+  private async validateUser(dto: UserLoginDto): Promise<ILogin> {
+    const user = await this.usersService.findByEmail(dto.email);
+
+    if (!user) return null;
+
+    const passMatch = await this.usersService.comparePass(
+      dto.password,
+      user.password,
+    );
+
+    if (!passMatch) return null;
+
+    return { _id: user._id, email: user.email, username: user.username };
   }
 
-  findAll() {
-    return `This action returns all auth`;
+  private async sign(user: ILogin): Promise<UserLoginResponseDto> {
+    const { _id, username, email } = user;
+
+    const payload = { email, sub: _id };
+
+    return new UserLoginResponseDto({
+      id: _id,
+      email,
+      username,
+      access_token: this.jwtService.sign(payload),
+    });
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} auth`;
+  public async authenticateUser(
+    dto: UserLoginDto,
+  ): Promise<UserLoginResponseDto> {
+    const isValidUser = await this.validateUser(dto);
+
+    if (!isValidUser) throw ERRORS.AUTH.INVALID_CREDENTIALS;
+
+    return this.sign(isValidUser);
   }
 
-  update(id: number, updateAuthDto: UpdateAuthDto) {
-    return `This action updates a #${id} auth`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} auth`;
+  public async decodeAccessToken<T extends object>(
+    accessToken: string,
+  ): Promise<T> {
+    return this.jwtService.verifyAsync(accessToken);
   }
 }
