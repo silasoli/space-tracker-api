@@ -40,6 +40,7 @@ export class UsersService {
 
   public async findAll(): Promise<UserResponseDto[]> {
     const users = await this.userModel.find();
+
     return users.map((user) => new UserResponseDto(user));
   }
 
@@ -51,6 +52,7 @@ export class UsersService {
 
   public async findOne(_id: string): Promise<UserResponseDto> {
     const user = await this.findUserByID(_id);
+
     return new UserResponseDto(user);
   }
 
