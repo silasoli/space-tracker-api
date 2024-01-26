@@ -1,11 +1,11 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { CreateRentalDto } from '../dto/create-rental.dto';
 import { UpdateRentalDto } from '../dto/update-rental.dto';
 import { InjectModel } from '@nestjs/mongoose';
 import { Rental, RentalDocument } from '../schemas/rental.entity';
 import { Model } from 'mongoose';
 import { ERRORS } from 'src/common/utils/constants/errors';
-import { isValidCPF } from 'src/common/utils/validators/IsValidCpf';
+import { isValidCPF } from '../../common/utils/validators/IsValidCPF';
 
 @Injectable()
 export class RentalsService {
@@ -56,7 +56,7 @@ export class RentalsService {
     const timeDifference = checkOutDate.getTime() - checkInDate.getTime();
     const differenceInDays = timeDifference / (1000 * 3600 * 24);
 
-    if (differenceInDays > 5) throw ERRORS.RENTALS.RENTAL_LIMIT;
+    if (differenceInDays > 3) throw ERRORS.RENTALS.RENTAL_LIMIT;
   }
 
   public async create(dto: CreateRentalDto): Promise<Rental> {
