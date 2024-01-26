@@ -9,7 +9,6 @@ jobs:
   build:
     runs-on: ubuntu-latest
     container: ubuntu:20.04
-    needs: build
     steps:
       - name: Obtain Latest Git ONLY within container for checkout
         run: |
@@ -32,6 +31,7 @@ jobs:
 
   deploy:
     runs-on: ubuntu-latest
+    needs: build
     steps:
       - name: Deploy to Vercel
         uses: amondnet/vercel-action@v25
