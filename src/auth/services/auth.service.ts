@@ -3,7 +3,7 @@ import { JwtService } from '@nestjs/jwt';
 import { UsersService } from '../../users/services/users.service';
 import { UserLoginDto } from '../dto/user-login.dto';
 import { UserLoginResponseDto } from '../dto/user-login-response.dto';
-import { ERRORS } from 'src/common/utils/constants/errors';
+import { ERRORS } from '../../common/utils/constants/errors';
 import { ILogin } from '../interfaces/ILogin.interface';
 
 @Injectable()

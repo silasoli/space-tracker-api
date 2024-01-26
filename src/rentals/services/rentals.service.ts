@@ -4,7 +4,7 @@ import { UpdateRentalDto } from '../dto/update-rental.dto';
 import { InjectModel } from '@nestjs/mongoose';
 import { Rental, RentalDocument } from '../schemas/rental.entity';
 import { Model } from 'mongoose';
-import { ERRORS } from 'src/common/utils/constants/errors';
+import { ERRORS } from '../../common/utils/constants/errors';
 import { isValidCPF } from '../../common/utils/validators/IsValidCPF';
 
 @Injectable()
