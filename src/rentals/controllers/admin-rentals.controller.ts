@@ -10,9 +10,9 @@ import {
 import { RentalsService } from '../services/rentals.service';
 import { UpdateRentalDto } from '../dto/update-rental.dto';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
-import { AuthUserJwtGuard } from 'src/auth/guards/auth-user-jwt.guard';
-import { RoleGuard } from 'src/roles/guards/role.guard';
-import { IDQueryDTO } from 'src/common/dto/id-query.dto';
+import { AuthUserJwtGuard } from '../../auth/guards/auth-user-jwt.guard';
+import { RoleGuard } from '../../roles/guards/role.guard';
+import { IDQueryDTO } from '../../common/dto/id-query.dto';
 
 @ApiBearerAuth()
 @ApiTags('Rentals')

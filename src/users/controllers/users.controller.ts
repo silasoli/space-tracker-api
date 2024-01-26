@@ -19,12 +19,12 @@ import {
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
-import { IDQueryDTO } from 'src/common/dto/id-query.dto';
-import { RoleGuard } from 'src/roles/guards/role.guard';
+import { IDQueryDTO } from '../../common/dto/id-query.dto';
+import { RoleGuard } from '../../roles/guards/role.guard';
 import { UserResponseDto } from '../dto/user-response.dto';
-import { Role } from 'src/roles/decorators/roles.decorator';
-import Roles from 'src/roles/enums/role.enum';
-import { AuthUserJwtGuard } from 'src/auth/guards/auth-user-jwt.guard';
+import { Role } from '../../roles/decorators/roles.decorator';
+import Roles from '../../roles/enums/role.enum';
+import { AuthUserJwtGuard } from '../../auth/guards/auth-user-jwt.guard';
 
 @ApiBearerAuth()
 @ApiTags('Users')
