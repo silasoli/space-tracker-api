@@ -9,6 +9,22 @@ on:
       - main
 
 jobs:
+  lint:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'workflow_run' && github.event.workflow == 'Lint'
+    steps:
+      - name: Trigger lint workflow
+        uses: actions/github-script@v5
+        with:
+          GITHUB_TOKEN: ${{ secrets.GH_PAT }}
+          script: |
+            console.log("Triggering lint workflow");
+            const response = await octokit.rest.actions.createWorkflowDispatch({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              workflow_id: 'Lint.yml', // Adjust this based on your lint workflow file name
+            });
+            console.log(response.data);
   build:
     runs-on: ubuntu-latest
     steps:
