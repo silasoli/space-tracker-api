@@ -11,7 +11,6 @@ on:
 jobs:
   lint:
     runs-on: ubuntu-latest
-    if: github.event_name == 'workflow_run' && github.event.workflow == 'Lint'
     steps:
       - name: Trigger lint workflow
         uses: actions/github-script@v5
