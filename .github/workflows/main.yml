@@ -25,11 +25,10 @@ jobs:
       - name: Install Dependencies
         run: npm install
 
-      - name: Run linters
-        uses: wearerequired/lint-action@v2
-        with:
-          eslint: true
-          prettier: true
+      - name: ESLint
+        run: npm run lint
+      - name: Prettier
+        run: npm run prettier:check
   build:
     runs-on: ubuntu-latest
     steps:

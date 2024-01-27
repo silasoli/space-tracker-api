@@ -6,7 +6,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { AuthUserJwtStrategy } from './strategies/auth-user-jwt.strategy';
 
 @Module({
-  imports:[
+  imports: [
     JwtModule.registerAsync({
       imports: [ConfigModule],
       useFactory: async (configService: ConfigService) => {

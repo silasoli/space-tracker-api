@@ -40,7 +40,6 @@ async function bootstrap() {
     ],
   });
 
-
   const port = configService.get('PORT');
   if (!port) throw new Error("Application port wasn't found");
   await app.listen(port);

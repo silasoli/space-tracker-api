@@ -27,4 +27,3 @@ export class Rental {
 }
 
 export const RentalSchema = SchemaFactory.createForClass(Rental);
-
