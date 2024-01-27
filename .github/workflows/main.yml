@@ -15,13 +15,12 @@ jobs:
       - name: Trigger lint workflow
         uses: actions/github-script@v5
         with:
-          GITHUB_TOKEN: ${{ secrets.GH_PAT }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
-            console.log("Triggering lint workflow");
-            const response = await octokit.rest.actions.createWorkflowDispatch({
+            const response = await github.actions.createWorkflowDispatch({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              workflow_id: 'Lint.yml', // Adjust this based on your lint workflow file name
+              workflow_id: 'lint.yml', // Adjust this based on your lint workflow file name
             });
             console.log(response.data);
   build:
