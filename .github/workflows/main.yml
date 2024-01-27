@@ -1,6 +1,7 @@
 #DOCS:
 #https://github.com/BetaHuhn/deploy-to-vercel-action
 #https://github.com/marketplace/actions/deploy-to-vercel-action
+#https://github.com/marketplace/actions/lint-action
 name: CI/CD with Vercel
 
 on:
