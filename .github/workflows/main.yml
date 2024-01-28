@@ -10,20 +10,13 @@ on:
       - main
 
 jobs:
-  common-steps:
+  run-linters:
+    name: run linters
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
-
-  run-linters:
-    name: run linters
-    needs: common-steps
-    runs-on: ubuntu-latest
-
-    steps:
-      # - name: Checkout Repository
-      #   uses: actions/checkout@v4
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -38,13 +31,33 @@ jobs:
 
       - name: Prettier
         run: npm run format
+
+  test:
+    name: test
+    needs: run-linters
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install Dependencies
+        run: npm install
+
+      - name: Run Jest Tests
+        run: npm test:cov
   
   build:
     runs-on: ubuntu-latest
-    needs: run-linters
+    needs: test
     steps:
-      # - name: Checkout Repository
-      #   uses: actions/checkout@v4
+      - name: Checkout Repository
+        uses: actions/checkout@v4
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
