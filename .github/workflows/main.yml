@@ -50,7 +50,7 @@ jobs:
         run: npm install
 
       - name: Run Jest Tests
-        run: npm test:cov
+        run: npm run test:cov
   
   build:
     runs-on: ubuntu-latest
