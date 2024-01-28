@@ -1,5 +1,6 @@
 import {
   BadRequestException,
+  ConflictException,
   ForbiddenException,
   NotFoundException,
 } from '@nestjs/common';
@@ -33,7 +34,11 @@ export const ERRORS = {
     }),
     RENTAL_LIMIT: new BadRequestException({
       id: 'RENTALS-004',
-      message: 'Só é possível realizar uma reserva de no máximo 5 dias',
+      message: 'Só é possível realizar uma reserva de no máximo 3 dias',
+    }),
+    RENTAL_CONFLICT: new ConflictException({
+      id: 'RENTALS-005',
+      message: 'Data não disponível',
     }),
   },
 };

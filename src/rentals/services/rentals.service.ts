@@ -3,10 +3,11 @@ import { CreateRentalDto } from '../dto/create-rental.dto';
 import { UpdateRentalDto } from '../dto/update-rental.dto';
 import { InjectModel } from '@nestjs/mongoose';
 import { Rental, RentalDocument } from '../schemas/rental.entity';
-import { Model } from 'mongoose';
+import { FilterQuery, Model } from 'mongoose';
 import { ERRORS } from '../../common/utils/constants/errors';
 import { isValidCPF } from '../../common/utils/validators/IsValidCPF';
 import { RentalResponseDto } from '../dto/rental-response.dto';
+import { DatesRentalResponseDto } from '../dto/dates-rentals-response.dto';
 
 @Injectable()
 export class RentalsService {
@@ -35,17 +36,16 @@ export class RentalsService {
     return user;
   }
 
-  private generateDateArray(checkInDate: Date, checkOutDate: Date): Date[] {
+  private generateDateArray(dto: CreateRentalDto): Date[] {
     const dateArray: Date[] = [];
 
     for (
-      let currentDate = checkInDate;
-      currentDate <= checkOutDate;
+      let currentDate = new Date(dto.checkInDate);
+      currentDate <= new Date(dto.checkOutDate);
       currentDate.setDate(currentDate.getDate() + 1)
     ) {
       dateArray.push(new Date(currentDate));
     }
-
     return dateArray;
   }
 
@@ -61,6 +61,34 @@ export class RentalsService {
     if (differenceInDays > 3) throw ERRORS.RENTALS.RENTAL_LIMIT;
   }
 
+  private async checkAvailability(
+    dto: CreateRentalDto,
+    dates: Date[],
+    excludeId?: string,
+  ): Promise<void> {
+    const query: FilterQuery<Rental> = {
+      $or: [
+        {
+          checkInDate: { $eq: dto.checkOutDate },
+          checkOutDate: { $eq: dto.checkInDate },
+        },
+        {
+          dates: {
+            $in: dates,
+          },
+        },
+      ],
+    };
+
+    if (excludeId) {
+      query._id = { $ne: excludeId };
+    }
+
+    const rental = await this.rentalModel.findOne(query);
+
+    if (rental) throw ERRORS.RENTALS.RENTAL_CONFLICT;
+  }
+
   public async create(dto: CreateRentalDto): Promise<RentalResponseDto> {
     isValidCPF(dto.document);
 
@@ -68,7 +96,9 @@ export class RentalsService {
 
     this.validateDates(dto.checkInDate, dto.checkOutDate);
 
-    const dates = this.generateDateArray(dto.checkInDate, dto.checkOutDate);
+    const dates = this.generateDateArray(dto);
+
+    await this.checkAvailability(dto, dates);
 
     const created = await this.rentalModel.create({ ...dto, dates });
 
@@ -79,6 +109,12 @@ export class RentalsService {
     const rentals = await this.rentalModel.find();
 
     return rentals.map((rental) => new RentalResponseDto(rental));
+  }
+
+  public async findUnavailableDates(): Promise<DatesRentalResponseDto[]> {
+    const rentals = await this.rentalModel.find({}, ['dates']);
+
+    return rentals.map((rental) => new DatesRentalResponseDto(rental));
   }
 
   public async findOne(_id: string): Promise<RentalResponseDto> {
