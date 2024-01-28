@@ -21,9 +21,6 @@ jobs:
         with:
           node-version: 20
 
-      - name: Install Dependencies
-        run: npm install
-
   run-linters:
     name: run linters
     needs: common-steps
@@ -38,8 +35,8 @@ jobs:
       #   with:
       #     node-version: 20
 
-      # - name: Install Dependencies
-      #   run: npm install
+      - name: Install Dependencies
+        run: npm install
 
       - name: ESLint
         run: npm run lint
@@ -59,8 +56,8 @@ jobs:
       #   with:
       #     node-version: 20
 
-      # - name: Install Dependencies
-      #   run: npm install
+      - name: Install Dependencies
+        run: npm install
 
       - name: Build
         run: npm run build
