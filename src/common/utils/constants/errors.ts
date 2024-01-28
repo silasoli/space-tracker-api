@@ -18,7 +18,7 @@ export const ERRORS = {
     }),
   },
   RENTALS: {
-    NOT_FOUND: new ForbiddenException({
+    NOT_FOUND: new NotFoundException({
       id: 'RENTALS-001',
       message: 'Agendamento não encontrado.',
     }),
