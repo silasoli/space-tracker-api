@@ -21,8 +21,8 @@ import { AuthUserJwtGuard } from '../../auth/guards/auth-user-jwt.guard';
 import { RoleGuard } from '../../roles/guards/role.guard';
 import { IDQueryDTO } from '../../common/dto/id-query.dto';
 import { RentalResponseDto } from '../dto/rental-response.dto';
-import { Role } from 'src/roles/decorators/roles.decorator';
-import Roles from 'src/roles/enums/role.enum';
+import { Role } from '../../roles/decorators/roles.decorator';
+import Roles from '../../roles/enums/role.enum';
 
 @ApiBearerAuth()
 @ApiTags('Rentals')
