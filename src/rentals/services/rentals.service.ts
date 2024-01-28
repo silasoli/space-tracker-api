@@ -6,6 +6,7 @@ import { Rental, RentalDocument } from '../schemas/rental.entity';
 import { Model } from 'mongoose';
 import { ERRORS } from '../../common/utils/constants/errors';
 import { isValidCPF } from '../../common/utils/validators/IsValidCPF';
+import { RentalResponseDto } from '../dto/rental-response.dto';
 
 @Injectable()
 export class RentalsService {
@@ -14,10 +15,16 @@ export class RentalsService {
     private rentalModel: Model<RentalDocument>,
   ) {}
 
-  private async transformBody(dto: CreateRentalDto) {
-    if (dto.checkInDate) new Date(dto.checkInDate).setHours(8, 0, 0, 0);
+  private transformBody(dto: CreateRentalDto): void {
+    if (dto.checkInDate) {
+      dto.checkInDate = new Date(dto.checkInDate);
+      dto.checkInDate.setUTCHours(8, 0, 0, 0);
+    }
 
-    if (dto.checkOutDate) new Date(dto.checkOutDate).setHours(22, 0, 0, 0);
+    if (dto.checkOutDate) {
+      dto.checkOutDate = new Date(dto.checkOutDate);
+      dto.checkOutDate.setUTCHours(22, 0, 0, 0);
+    }
   }
 
   private async findRentalByID(_id: string): Promise<Rental> {
@@ -28,27 +35,22 @@ export class RentalsService {
     return user;
   }
 
-  private async generateDateArray(dto: CreateRentalDto): Promise<Date[]> {
-    const startDate = new Date(dto.checkInDate);
-    const endDate = new Date(dto.checkOutDate);
+  private generateDateArray(checkInDate: Date, checkOutDate: Date): Date[] {
     const dateArray: Date[] = [];
 
     for (
-      let currentDate = startDate;
-      currentDate <= endDate;
+      let currentDate = checkInDate;
+      currentDate <= checkOutDate;
       currentDate.setDate(currentDate.getDate() + 1)
     ) {
       dateArray.push(new Date(currentDate));
     }
+
     return dateArray;
   }
 
-  private validateDates(dto: CreateRentalDto): void {
-    const checkInDate = new Date(dto.checkInDate);
-    const checkOutDate = new Date(dto.checkOutDate);
-
-    if (dto.checkOutDate < dto.checkInDate)
-      throw ERRORS.RENTALS.PREVIOUS_CHECKIN;
+  private validateDates(checkInDate: Date, checkOutDate: Date): void {
+    if (checkOutDate < checkInDate) throw ERRORS.RENTALS.PREVIOUS_CHECKIN;
 
     if (checkInDate.toDateString() === new Date().toDateString())
       throw ERRORS.RENTALS.ADVANCE_CHECKIN;
@@ -59,38 +61,36 @@ export class RentalsService {
     if (differenceInDays > 3) throw ERRORS.RENTALS.RENTAL_LIMIT;
   }
 
-  public async create(dto: CreateRentalDto): Promise<Rental> {
+  public async create(dto: CreateRentalDto): Promise<RentalResponseDto> {
     isValidCPF(dto.document);
 
-    await this.transformBody(dto);
+    this.transformBody(dto);
 
-    this.validateDates(dto);
+    this.validateDates(dto.checkInDate, dto.checkOutDate);
 
-    const dates = await this.generateDateArray(dto);
+    const dates = this.generateDateArray(dto.checkInDate, dto.checkOutDate);
 
     const created = await this.rentalModel.create({ ...dto, dates });
 
-    return created;
-    // return new UserResponseDto(created);
+    return new RentalResponseDto(created);
   }
 
-  public async findAll(): Promise<Rental[]> {
-    const users = await this.rentalModel.find();
+  public async findAll(): Promise<RentalResponseDto[]> {
+    const rentals = await this.rentalModel.find();
 
-    return users;
-
-    // return users.map((user) => new UserResponseDto(user))
+    return rentals.map((rental) => new RentalResponseDto(rental));
   }
 
-  public async findOne(_id: string): Promise<Rental> {
-    const user = await this.findRentalByID(_id);
+  public async findOne(_id: string): Promise<RentalResponseDto> {
+    const rental = await this.findRentalByID(_id);
 
-    return user;
-
-    // return new UserResponseDto(user);
+    return new RentalResponseDto(rental);
   }
 
-  public async update(_id: string, dto: UpdateRentalDto): Promise<Rental> {
+  public async update(
+    _id: string,
+    dto: UpdateRentalDto,
+  ): Promise<RentalResponseDto> {
     await this.findRentalByID(_id);
 
     const rawData = { ...dto };
