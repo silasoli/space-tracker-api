@@ -16,7 +16,7 @@ export class RentalsService {
     private rentalModel: Model<RentalDocument>,
   ) {}
 
-  private transformBody(dto: CreateRentalDto): void {
+  private transformBody(dto: CreateRentalDto | UpdateRentalDto): void {
     if (dto.checkInDate) {
       dto.checkInDate = new Date(dto.checkInDate);
       dto.checkInDate.setUTCHours(8, 0, 0, 0);
@@ -36,7 +36,7 @@ export class RentalsService {
     return user;
   }
 
-  private generateDateArray(dto: CreateRentalDto): Date[] {
+  private generateDateArray(dto: CreateRentalDto | UpdateRentalDto): Date[] {
     const dateArray: Date[] = [];
 
     for (
@@ -62,7 +62,7 @@ export class RentalsService {
   }
 
   private async checkAvailability(
-    dto: CreateRentalDto,
+    dto: CreateRentalDto | UpdateRentalDto,
     dates: Date[],
     excludeId?: string,
   ): Promise<void> {
@@ -84,9 +84,9 @@ export class RentalsService {
       query._id = { $ne: excludeId };
     }
 
-    const rental = await this.rentalModel.findOne(query);
+    const rental = await this.rentalModel.find(query);
 
-    if (rental) throw ERRORS.RENTALS.RENTAL_CONFLICT;
+    if (rental.length !== 0) throw ERRORS.RENTALS.RENTAL_CONFLICT;
   }
 
   public async create(dto: CreateRentalDto): Promise<RentalResponseDto> {
@@ -127,11 +127,19 @@ export class RentalsService {
     _id: string,
     dto: UpdateRentalDto,
   ): Promise<RentalResponseDto> {
-    await this.findRentalByID(_id);
+    const rental = await this.findRentalByID(_id);
 
-    const rawData = { ...dto };
+    if (dto.document) isValidCPF(dto.document);
 
-    await this.rentalModel.updateOne({ _id }, rawData);
+    this.transformBody(dto);
+
+    this.validateDates(dto.checkInDate, dto.checkOutDate);
+
+    const dates = this.generateDateArray(dto);
+
+    await this.checkAvailability(dto, dates, rental._id.toString());
+
+    await this.rentalModel.updateOne({ _id }, { ...dto, dates });
 
     return this.findOne(_id);
   }

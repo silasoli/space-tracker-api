@@ -1,4 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { Transform } from 'class-transformer';
 import {
   IsDateString,
   IsMobilePhone,
@@ -18,6 +19,7 @@ export class CreateRentalDto {
   @ApiProperty({ required: true })
   @IsNotEmpty({ message: 'Envie o seu telefone.' })
   @IsNumberString({}, { message: 'Seu documento deve conter apenas números' })
+  @Transform(({ value }) => value.replace(/[^\d]/g, ''))
   document: string;
 
   @ApiProperty({ required: true })
@@ -28,6 +30,7 @@ export class CreateRentalDto {
     { strictMode: false },
     { message: 'O telefone deve ser válido' },
   )
+  @Transform(({ value }) => value.replace(/\D/g, ''))
   phone: string;
 
   @ApiProperty({ required: true })
