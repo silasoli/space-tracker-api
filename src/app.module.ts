@@ -6,6 +6,7 @@ import { AuthModule } from './auth/auth.module';
 import { MongooseModule } from '@nestjs/mongoose';
 import { ConfigModule } from '@nestjs/config';
 import { RentalsModule } from './rentals/rentals.module';
+import { MailerModule } from './mailer/mailer.module';
 
 @Module({
   imports: [
@@ -15,6 +16,7 @@ import { RentalsModule } from './rentals/rentals.module';
     RolesModule,
     AuthModule,
     RentalsModule,
+    MailerModule,
   ],
   controllers: [AppController],
 })
