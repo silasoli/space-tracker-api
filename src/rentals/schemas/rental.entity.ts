@@ -24,6 +24,12 @@ export class Rental {
 
   @Prop({ type: [Date], default: [] })
   dates: Date[];
+
+  @Prop({ default: () => new Date() })
+  createdAt: Date;
+
+  @Prop({ default: () => new Date() })
+  updatedAt: Date;
 }
 
 export const RentalSchema = SchemaFactory.createForClass(Rental);

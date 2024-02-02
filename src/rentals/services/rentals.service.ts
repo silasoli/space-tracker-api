@@ -8,6 +8,7 @@ import { ERRORS } from '../../common/utils/constants/errors';
 import { isValidCPF } from '../../common/utils/validators/IsValidCPF';
 import { RentalResponseDto } from '../dto/rental-response.dto';
 import { DatesRentalResponseDto } from '../dto/dates-rentals-response.dto';
+import { RentalQueryDto } from '../dto/rental-query.dto';
 
 @Injectable()
 export class RentalsService {
@@ -100,13 +101,26 @@ export class RentalsService {
 
     await this.checkAvailability(dto, dates);
 
-    const created = await this.rentalModel.create({ ...dto, dates });
+    const created = await this.rentalModel.create({
+      ...dto,
+      dates,
+      createdAt: new Date(),
+    });
 
     return new RentalResponseDto(created);
   }
 
-  public async findAll(): Promise<RentalResponseDto[]> {
-    const rentals = await this.rentalModel.find();
+  public async findAll(query: RentalQueryDto): Promise<RentalResponseDto[]> {
+    const filters: FilterQuery<Rental> = {};
+
+    if (query.finishedRent) {
+      const currentDate = new Date();
+      currentDate.setHours(19, 0, 0, 0);
+
+      filters.checkOutDate = { $lt: currentDate };
+    }
+
+    const rentals = await this.rentalModel.find(filters);
 
     return rentals.map((rental) => new RentalResponseDto(rental));
   }
@@ -139,7 +153,10 @@ export class RentalsService {
 
     await this.checkAvailability(dto, dates, rental._id.toString());
 
-    await this.rentalModel.updateOne({ _id }, { ...dto, dates });
+    await this.rentalModel.updateOne(
+      { _id },
+      { ...dto, dates, updatedAt: new Date() },
+    );
 
     return this.findOne(_id);
   }

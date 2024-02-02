@@ -7,6 +7,7 @@ import {
   Delete,
   UseGuards,
   HttpCode,
+  Query,
 } from '@nestjs/common';
 import { RentalsService } from '../services/rentals.service';
 import { UpdateRentalDto } from '../dto/update-rental.dto';
@@ -23,6 +24,7 @@ import { IDQueryDTO } from '../../common/dto/id-query.dto';
 import { RentalResponseDto } from '../dto/rental-response.dto';
 import { Role } from '../../roles/decorators/roles.decorator';
 import Roles from '../../roles/enums/role.enum';
+import { RentalQueryDto } from '../dto/rental-query.dto';
 
 @ApiBearerAuth()
 @ApiTags('Rentals')
@@ -39,8 +41,10 @@ export class AdminRentalsController {
   })
   @Get()
   @Role([Roles.ADMIN])
-  public async findAll(): Promise<RentalResponseDto[]> {
-    return this.rentalsService.findAll();
+  public async findAll(
+    @Query() query: RentalQueryDto,
+  ): Promise<RentalResponseDto[]> {
+    return this.rentalsService.findAll(query);
   }
 
   @ApiOperation({ summary: 'Obter agendamento.' })
