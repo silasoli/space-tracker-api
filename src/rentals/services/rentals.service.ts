@@ -11,6 +11,8 @@ import { DatesRentalResponseDto } from '../dto/dates-rentals-response.dto';
 import { RentalQueryDto } from '../dto/rental-query.dto';
 import { MailerService } from '../../mailer/mailer.service';
 import { ConfigService } from '@nestjs/config';
+import { FormatUtil } from '../../common/utils/formatters/format.util';
+import { SendMailWithTemplateDto } from '../../mailer/dto/send-mail-with-template.dto';
 
 @Injectable()
 export class RentalsService {
@@ -94,6 +96,29 @@ export class RentalsService {
     if (rental.length !== 0) throw ERRORS.RENTALS.RENTAL_CONFLICT;
   }
 
+  private async sendCreationNotification(rental: Rental): Promise<void> {
+    const name = FormatUtil.capitalizeFirst(rental.name);
+
+    const dto: SendMailWithTemplateDto = {
+      emailAddress: this.config.get('MAIL_RENTAL_NOTIFICATION'),
+      title: `Nova reserva confirmada de: ${name}`,
+    };
+
+    const context = {
+      name,
+      document: FormatUtil.formatCPF(rental.document),
+      phone: FormatUtil.formatPhone(rental.phone),
+      checkInDate: FormatUtil.toPTBRDateString(rental.checkInDate),
+      checkOutDate: FormatUtil.toPTBRDateString(rental.checkOutDate)
+    };
+
+    await this.mailerService.sendEmailWithTemplate(
+      dto,
+      context,
+      'rental-notification',
+    );
+  }
+
   public async create(dto: CreateRentalDto): Promise<RentalResponseDto> {
     isValidCPF(dto.document);
 
@@ -111,11 +136,7 @@ export class RentalsService {
       createdAt: new Date(),
     });
 
-    // await this.mailerService.sendEmailWithTemplate({
-    //   emailAddress: this.config.get('MAIL_RENTAL_NOTIFICATION')
-    //   message: '',
-    //   title: ''
-    // })
+    await this.sendCreationNotification(created);
 
     return new RentalResponseDto(created);
   }

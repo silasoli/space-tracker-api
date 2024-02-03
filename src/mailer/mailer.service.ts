@@ -2,12 +2,14 @@ import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import SMTPTransport from 'nodemailer/lib/smtp-transport';
 import * as nodemailer from 'nodemailer';
-import { SendMailDto } from './dto/send-mail.dto';
 import { Cron } from '@nestjs/schedule';
 import { ERRORS } from '../common/utils/constants/errors';
 import * as path from 'path';
 import * as fs from 'fs';
 import * as ejs from 'ejs';
+import { SendMailDto } from './dto/send-mail.dto';
+import { SendMailWithTemplateDto } from './dto/send-mail-with-template.dto';
+import { FormatUtil } from '../common/utils/formatters/format.util';
 
 @Injectable()
 export class MailerService {
@@ -31,10 +33,10 @@ export class MailerService {
   }
 
   public sendEmailWithTemplate(
-    dto: SendMailDto,
+    dto: SendMailWithTemplateDto,
     context: object,
     template: string,
-  ) {
+  ): Promise<SMTPTransport.SentMessageInfo> {
     const filename = path.join(
       process.cwd(),
       'src/common/emails',
@@ -67,15 +69,14 @@ export class MailerService {
     });
   }
 
-  // @Cron('0 0 0 * * 5')
-  // @Cron('45 * * * * *')
-  private async weeklyEmailTestCron() {
+  @Cron('0 0 0 * * 5')
+  private async weeklyEmailTestCron(): Promise<void> {
     this.logger.log('Starting weekly email test cron.');
 
     const email = await this.emailSender({
       emailAddress: this.config.get('MAIL_TEST_TO'),
       title: 'Space Tracker API',
-      message: `Teste de email semanal - Dia: ${new Date().toLocaleDateString('pt-br')}.`,
+      message: `Teste de email semanal - Dia: ${FormatUtil.toPTBRDateString(new Date())}.`,
     });
 
     if (!email.accepted) this.logger.error(ERRORS.MAILER.WEEKLY_TEST);
