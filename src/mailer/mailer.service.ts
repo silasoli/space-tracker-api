@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import SMTPTransport from 'nodemailer/lib/smtp-transport';
 import * as nodemailer from 'nodemailer';
@@ -16,7 +16,7 @@ export class MailerService {
 
   constructor(private readonly config: ConfigService) {
     const mailHost = config.get('MAIL_HOST');
-    if (!mailHost) throw new BadRequestException('Mail host not configured');
+    if (!mailHost) throw ERRORS.MAILER.MAIL_HOST;
 
     this.transporter = nodemailer.createTransport({
       host: config.get('MAIL_HOST'),
@@ -41,8 +41,7 @@ export class MailerService {
       `${template}.ejs`,
     );
 
-    if (!fs.existsSync(filename))
-      throw new BadRequestException('Template de e-mail não encontrado');
+    if (!fs.existsSync(filename)) throw ERRORS.MAILER.NOT_FOUND_TEMPLATE;
 
     const templateString = fs.readFileSync(filename, { encoding: 'utf-8' });
 
@@ -58,8 +57,7 @@ export class MailerService {
   private async emailSender(
     dto: SendMailDto,
   ): Promise<SMTPTransport.SentMessageInfo> {
-    if (!this.transporter)
-      throw new BadRequestException('Transporter not configured');
+    if (!this.transporter) throw ERRORS.MAILER.TRANSPORTER;
 
     return this.transporter.sendMail({
       to: dto.emailAddress,

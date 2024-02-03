@@ -1,14 +1,10 @@
-import {
-  CanActivate,
-  ExecutionContext,
-  Injectable,
-  UnauthorizedException,
-} from '@nestjs/common';
+import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { ROLE_KEY } from '../decorators/roles.decorator';
 import Role from '../enums/role.enum';
 import { RoleUtil } from '../utils/roles.util';
 import { RequestWithUser } from '../../auth/interfaces/IUser-request.interface';
+import { ERRORS } from '../../common/utils/constants/errors';
 
 @Injectable()
 export class RoleGuard implements CanActivate {
@@ -33,9 +29,9 @@ export class RoleGuard implements CanActivate {
     const userid = String(user._id);
 
     const verify = await this.roleUtil.userHasRole(userid, requiredActions);
-    if (verify) return verify;
 
-    if (!verify)
-      throw new UnauthorizedException('User does not have permission');
+    if (!verify) throw ERRORS.AUTH.LACK_PERMISSION;
+
+    return verify;
   }
 }

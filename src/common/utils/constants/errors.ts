@@ -3,6 +3,8 @@ import {
   ConflictException,
   ForbiddenException,
   NotFoundException,
+  ServiceUnavailableException,
+  UnauthorizedException,
 } from '@nestjs/common';
 
 export const ERRORS = {
@@ -15,7 +17,11 @@ export const ERRORS = {
   AUTH: {
     INVALID_CREDENTIALS: new ForbiddenException({
       id: 'AUTH-001',
-      message: 'Credenciais inválidas',
+      message: 'Credenciais inválidas.',
+    }),
+    LACK_PERMISSION: new UnauthorizedException({
+      id: 'AUTH-002',
+      message: 'Usuário não tem permissão.',
     }),
   },
   RENTALS: {
@@ -34,11 +40,11 @@ export const ERRORS = {
     }),
     RENTAL_LIMIT: new BadRequestException({
       id: 'RENTALS-004',
-      message: 'Só é possível realizar uma reserva de no máximo 3 dias',
+      message: 'Só é possível realizar uma reserva de no máximo 3 dias.',
     }),
     RENTAL_CONFLICT: new ConflictException({
       id: 'RENTALS-005',
-      message: 'Data não disponível',
+      message: 'Data não disponível.',
     }),
   },
   MAILER: {
@@ -46,5 +52,23 @@ export const ERRORS = {
       id: 'MAILER-001',
       message: 'Error ao enviar email de teste semanal.',
     }),
-  }
+    MAIL_HOST: new ServiceUnavailableException({
+      id: 'MAILER-002',
+      message: 'Host de email não configurado.',
+    }),
+    NOT_FOUND_TEMPLATE: new NotFoundException({
+      id: 'MAILER-003',
+      message: 'Template de email não encontrado.',
+    }),
+    TRANSPORTER: new ServiceUnavailableException({
+      id: 'MAILER-004',
+      message: 'Transportador não configurado.',
+    }),
+  },
+  UTILS: {
+    INVALID_DOCUMENT: new BadRequestException({
+      id: 'UTILS-001',
+      message: 'Documento inválido.',
+    }),
+  },
 };

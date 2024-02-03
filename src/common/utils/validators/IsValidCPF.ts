@@ -1,4 +1,4 @@
-import { BadRequestException } from '@nestjs/common';
+import { ERRORS } from '../constants/errors';
 
 /* eslint-disable @typescript-eslint/no-unused-vars */
 function validCPF(document: string): boolean {
@@ -35,7 +35,7 @@ function validCPF(document: string): boolean {
 export function isValidCPF(document: string): boolean {
   const isValid = validCPF(document);
 
-  if (!isValid) throw new BadRequestException('documento inválido');
+  if (!isValid) throw ERRORS.UTILS.INVALID_DOCUMENT;
 
   return isValid;
 }
