@@ -1,13 +1,18 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import SMTPTransport from 'nodemailer/lib/smtp-transport';
 import * as nodemailer from 'nodemailer';
 import { SendMailDto } from './dto/send-mail.dto';
+import { Cron } from '@nestjs/schedule';
+import { ERRORS } from '../common/utils/constants/errors';
+import * as path from 'path';
+import * as fs from 'fs';
+import * as ejs from 'ejs';
 
 @Injectable()
 export class MailerService {
-  transporter: nodemailer.Transporter<SMTPTransport.SentMessageInfo>;
-
+  private transporter: nodemailer.Transporter<SMTPTransport.SentMessageInfo>;
+  private readonly logger = new Logger(MailerService.name);
 
   constructor(private readonly config: ConfigService) {
     const mailHost = config.get('MAIL_HOST');
@@ -25,17 +30,58 @@ export class MailerService {
     });
   }
 
-  async sendMail(dto: SendMailDto) {
+  public sendEmailWithTemplate(
+    dto: SendMailDto,
+    context: object,
+    template: string,
+  ) {
+    const filename = path.join(
+      process.cwd(),
+      'src/common/emails',
+      `${template}.ejs`,
+    );
+
+    if (!fs.existsSync(filename))
+      throw new BadRequestException('Template de e-mail não encontrado');
+
+    const templateString = fs.readFileSync(filename, { encoding: 'utf-8' });
+
+    const body = ejs.render(templateString, { context });
+
+    return this.emailSender({
+      emailAddress: dto.emailAddress,
+      title: dto.title,
+      message: body,
+    });
+  }
+
+  private async emailSender(
+    dto: SendMailDto,
+  ): Promise<SMTPTransport.SentMessageInfo> {
     if (!this.transporter)
       throw new BadRequestException('Transporter not configured');
 
-    const msg = await this.transporter.sendMail({
-      to: dto.mail,
+    return this.transporter.sendMail({
+      to: dto.emailAddress,
       from: this.config.get('MAIL_FROM'),
-      subject: 'Enviando Email com NestJS',
-      html: `<h3 style="color: blue">${dto.message}</h3>`,
+      subject: dto.title,
+      html: dto.message,
+    });
+  }
+
+  // @Cron('0 0 0 * * 5')
+  // @Cron('45 * * * * *')
+  private async weeklyEmailTestCron() {
+    this.logger.log('Starting weekly email test cron.');
+
+    const email = await this.emailSender({
+      emailAddress: this.config.get('MAIL_TEST_TO'),
+      title: 'Space Tracker API',
+      message: `Teste de email semanal - Dia: ${new Date().toLocaleDateString('pt-br')}.`,
     });
 
-    if (msg.accepted) return 'Email successfully sent';
+    if (!email.accepted) this.logger.error(ERRORS.MAILER.WEEKLY_TEST);
+
+    this.logger.log('Finalizando o cron de teste de e-mail semanal.');
   }
 }

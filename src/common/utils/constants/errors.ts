@@ -41,4 +41,10 @@ export const ERRORS = {
       message: 'Data não disponível',
     }),
   },
+  MAILER: {
+    WEEKLY_TEST: new BadRequestException({
+      id: 'MAILER-001',
+      message: 'Error ao enviar email de teste semanal.',
+    }),
+  }
 };

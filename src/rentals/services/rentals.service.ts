@@ -9,12 +9,16 @@ import { isValidCPF } from '../../common/utils/validators/IsValidCPF';
 import { RentalResponseDto } from '../dto/rental-response.dto';
 import { DatesRentalResponseDto } from '../dto/dates-rentals-response.dto';
 import { RentalQueryDto } from '../dto/rental-query.dto';
+import { MailerService } from '../../mailer/mailer.service';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class RentalsService {
   constructor(
     @InjectModel(Rental.name)
     private rentalModel: Model<RentalDocument>,
+    private readonly mailerService: MailerService,
+    private readonly config: ConfigService,
   ) {}
 
   private transformBody(dto: CreateRentalDto | UpdateRentalDto): void {
@@ -106,6 +110,12 @@ export class RentalsService {
       dates,
       createdAt: new Date(),
     });
+
+    // await this.mailerService.sendEmailWithTemplate({
+    //   emailAddress: this.config.get('MAIL_RENTAL_NOTIFICATION')
+    //   message: '',
+    //   title: ''
+    // })
 
     return new RentalResponseDto(created);
   }

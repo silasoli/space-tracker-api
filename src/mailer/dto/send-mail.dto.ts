@@ -5,9 +5,13 @@ export class SendMailDto {
   @ApiProperty({ required: true })
   @IsNotEmpty({ message: 'É necessário informar o email.' })
   @IsEmail({}, { message: 'O email informado deve ser válido' })
-  mail: string;
+  emailAddress: string;
 
   @ApiProperty({ required: true })
   @IsNotEmpty({ message: 'É necessário enviar uma mensagem.' })
   message: string;
+
+  @ApiProperty({ required: true })
+  @IsNotEmpty({ message: 'É necessário enviar um título.' })
+  title: string
 }

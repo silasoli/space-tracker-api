@@ -8,8 +8,13 @@ import { MailerService } from './mailer.service';
 export class MailerController {
   constructor(private readonly mailerService: MailerService) {}
 
+  // @Post('send-mail')
+  // sendMail(@Body() dto: SendMailDto) {
+  //   return this.mailerService.emailSender(dto);
+  // }
+
   @Post('send-mail')
-  sendMail(@Body() dto: SendMailDto) {
-    return this.mailerService.sendMail(dto);
+  sendMail() {
+    return this.mailerService.sendEmailWithTemplate('rental-notification');
   }
 }
