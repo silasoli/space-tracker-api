@@ -8,19 +8,18 @@ describe('AuthService', () => {
   let usersService: UsersService;
   let jwtService: JwtService;
 
-
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         AuthService,
         {
           provide: JwtService,
-          useValue: {}
+          useValue: {},
         },
         {
           provide: UsersService,
-          useValue: {}
-        }
+          useValue: {},
+        },
       ],
     }).compile();
 

@@ -13,5 +13,5 @@ export class SendMailDto {
 
   @ApiProperty({ required: true })
   @IsNotEmpty({ message: 'É necessário enviar um título.' })
-  title: string
+  title: string;
 }

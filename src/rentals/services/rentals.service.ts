@@ -109,7 +109,7 @@ export class RentalsService {
       document: FormatUtil.formatCPF(rental.document),
       phone: FormatUtil.formatPhone(rental.phone),
       checkInDate: FormatUtil.toPTBRDateString(rental.checkInDate),
-      checkOutDate: FormatUtil.toPTBRDateString(rental.checkOutDate)
+      checkOutDate: FormatUtil.toPTBRDateString(rental.checkOutDate),
     };
 
     await this.mailerService.sendEmailWithTemplate(

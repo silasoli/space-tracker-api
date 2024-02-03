@@ -16,7 +16,8 @@ class FormatUtilCls {
     return document.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4');
   }
   formatPhone(phone: string): string {
-    if (phone.length === 13 && phone.startsWith('55')) phone = phone.substring(2);
+    if (phone.length === 13 && phone.startsWith('55'))
+      phone = phone.substring(2);
 
     return `(${phone.substring(0, 2)}) ${phone.substring(2, 3)} ${phone.substring(3, 7)}-${phone.substring(7)}`;
   }

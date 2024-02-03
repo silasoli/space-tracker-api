@@ -8,15 +8,14 @@ describe('RentalsService', () => {
   let service: RentalsService;
   let rentalModel: Model<RentalDocument>;
 
-
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         RentalsService,
         {
           provide: getModelToken(Rental.name),
-          useValue: {}
-        }
+          useValue: {},
+        },
       ],
     }).compile();
 
