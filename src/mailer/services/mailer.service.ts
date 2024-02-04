@@ -69,7 +69,7 @@ export class MailerService {
     });
   }
 
-  @Cron('0 0 0 * * 5')
+  @Cron('0 0 22 * * 6')
   private async weeklyEmailTestCron(): Promise<void> {
     this.logger.log('Starting weekly email test cron.');
 
