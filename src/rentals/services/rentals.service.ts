@@ -9,7 +9,7 @@ import { isValidCPF } from '../../common/utils/validators/IsValidCPF';
 import { RentalResponseDto } from '../dto/rental-response.dto';
 import { DatesRentalResponseDto } from '../dto/dates-rentals-response.dto';
 import { RentalQueryDto } from '../dto/rental-query.dto';
-import { MailerService } from '../../mailer/mailer.service';
+import { MailerService } from '../../mailer/services/mailer.service';
 import { ConfigService } from '@nestjs/config';
 import { FormatUtil } from '../../common/utils/formatters/format.util';
 import { SendMailWithTemplateDto } from '../../mailer/dto/send-mail-with-template.dto';

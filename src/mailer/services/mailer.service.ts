@@ -3,13 +3,13 @@ import { ConfigService } from '@nestjs/config';
 import SMTPTransport from 'nodemailer/lib/smtp-transport';
 import * as nodemailer from 'nodemailer';
 import { Cron } from '@nestjs/schedule';
-import { ERRORS } from '../common/utils/constants/errors';
+import { ERRORS } from '../../common/utils/constants/errors';
 import * as path from 'path';
 import * as fs from 'fs';
 import * as ejs from 'ejs';
-import { SendMailDto } from './dto/send-mail.dto';
-import { SendMailWithTemplateDto } from './dto/send-mail-with-template.dto';
-import { FormatUtil } from '../common/utils/formatters/format.util';
+import { SendMailDto } from '../dto/send-mail.dto';
+import { SendMailWithTemplateDto } from '../dto/send-mail-with-template.dto';
+import { FormatUtil } from '../../common/utils/formatters/format.util';
 
 @Injectable()
 export class MailerService {

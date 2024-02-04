@@ -4,7 +4,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { Rental, RentalSchema } from './schemas/rental.entity';
 import { AdminRentalsController } from './controllers/admin-rentals.controller';
 import { UserRentalsController } from './controllers/user-rentals.controller';
-import { MailerService } from '../mailer/mailer.service';
+import { MailerService } from '../mailer/services/mailer.service';
 
 @Module({
   imports: [
