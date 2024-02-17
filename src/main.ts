@@ -18,7 +18,10 @@ async function bootstrap() {
   );
 
   app.enableCors({
-    origin: '*',
+    origin: [
+      'https://ranchoserra.vercel.app',
+      'https://ranchoserradomucambo.com',
+    ],
   });
 
   const config = new DocumentBuilder()
