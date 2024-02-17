@@ -19,8 +19,8 @@ async function bootstrap() {
 
   app.enableCors({
     origin: [
-      'https://ranchoserra.vercel.app',
-      'https://ranchoserradomucambo.com',
+      'https://ranchoserrateste.vercel.app',
+      // 'https://ranchoserradomucambo.com',
     ],
   });
 
