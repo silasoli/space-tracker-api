@@ -3,8 +3,16 @@ import { Rental } from '../schemas/rental.entity';
 
 export class RentalResponseDto {
   constructor(rental: Rental) {
-    const { _id, name, document, phone, checkInDate, checkOutDate, dates } =
-      rental;
+    const {
+      _id,
+      name,
+      document,
+      phone,
+      checkInDate,
+      checkOutDate,
+      dates,
+      createdAt,
+    } = rental;
 
     return {
       _id: String(_id),
@@ -14,6 +22,7 @@ export class RentalResponseDto {
       checkInDate,
       checkOutDate,
       dates,
+      createdAt,
     };
   }
 
@@ -37,4 +46,7 @@ export class RentalResponseDto {
 
   @ApiProperty({ required: true, type: [Date] })
   dates: Date[];
+
+  @ApiProperty({ required: true })
+  createdAt: Date;
 }
